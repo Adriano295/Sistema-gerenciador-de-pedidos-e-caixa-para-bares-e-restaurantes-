@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Pedidos e Caixa - Sushi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #343a40;
+            color: #fff;
+        }
+
+        nav {
+            background-color: rgba(52, 58, 64, 0.9);
+            padding: 10px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #fff;
+        }
+
+        nav button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        .tela {
+            display: none;
+        }
+
+        h2.pedidos-title,
+        h2.caixa-title,
+        h2.entregas-title,
+        h2.financeiro-title,
+        h2.despesas-title,
+        h2.relatorios-title {
+            color: #f8f9fa;
+            font-family: serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f8f9fa;
+            padding-bottom: 5px;
+        }
+
+        .container-pedidos {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #cardapio {
+            width: 45%;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            color: #f8f9fa;
+        }
+
+        #pedido {
+            width: 45%;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            color: #f8f9fa;
+        }
+
+        #tela-caixa {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container-caixa {
+            width: 80%;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        #itens-caixa,
+        #div-pagamento,
+        #opcoes-pagamento {
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #495057;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            color: #f8f9fa;
+        }
+
+        #cupom-pedido {
+            width: 100%;
+            background-color: #f8f9fa;
+            color: #212529;
+            padding: 10px;
+            border: 1px dashed #000;
+            margin-top: 20px;
+            font-size: 0.8em;
+            display: none;
+            grid-column: 1 / 3;
+            white-space: pre-wrap;
+        }
+
+        #cupom-pedido p {
+            margin: 5px 0;
+        }
+
+        #cupom-pedido .empresa {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        #opcoes-pagamento button {
+            margin: 5px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+        }
+
+        #opcoes-pagamento button.selecionado {
+            background-color: #0056b3;
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #FFFFFF;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #f8f9fa;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #6c757d;
+            border-radius: 4px;
+            background-color: #495057;
+            color: #fff;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: rgba(52, 58, 64, 0.9);
+            color: #fff;
+        }
+
+        #finalizar-venda {
+            margin-top: 15px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: red;
+        }
+
+        #finalizar-venda:hover {
+            background-color: #c82333;
+        }
+
+        #logo {
+            margin-right: 20px;
+            max-height: 50px;
+        }
+
+        #tela-entregas {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #lista-entregas {
+            width: 80%;
+            margin-bottom: 20px;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            color: #f8f9fa;
+        }
+
+        .item-entrega {
+            border-bottom: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #f8f9fa;
+        }
+
+        .item-entrega:last-child {
+            border-bottom: none;
+        }
+
+        .info-cliente {
+            margin-bottom: 10px;
+        }
+
+        /* Define a cor do texto das informações do cliente para branco */
+        .item-entrega .info-cliente p {
+            color: white;
+        }
+
+        .botoes-entrega {
+            display: flex;
+        }
+
+        .botoes-entrega button {
+            margin-left: 5px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #form-cliente {
+            width: 80%;
+            margin-bottom: 20px;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            color: #f8f9fa;
+        }
+
+        #form-cliente label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #form-cliente input[type="text"],
+        #form-cliente input[type="tel"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #6c757d;
+            border-radius: 4px;
+        }
+
+        .status-pedido {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .secao-data {
+            margin-bottom: 20px;
+            width: 100%;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 10px;
+            border-radius: 5px;
+            color: #f8f9fa;
+        }
+
+        .secao-data h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        #tela-financeiro {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #relatorios-financeiros {
+            width: 80%;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #f8f9fa;
+        }
+
+        .resumo-financeiro {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #495057;
+        }
+
+        .detalhes-mensais {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #495057;
+        }
+
+        .entradas-saidas {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 10px;
+        }
+
+        #tela-despesas {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #form-despesa {
+            width: 80%;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #f8f9fa;
+        }
+
+        #lista-despesas {
+            width: 80%;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #f8f9fa;
+        }
+
+        #tela-relatorios {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #filtros-relatorio {
+            width: 80%;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #f8f9fa;
+        }
+
+        #tabela-relatorio {
+            width: 80%;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #f8f9fa;
+        }
+
+        #finalizar-pedido {
+            margin-top: 20px;
+            background-color: red;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #finalizar-pedido:hover {
+            background-color: #c82333;
+        }
+
+        #tela-relatorios {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        #filtros-relatorio {
+            width: 80%;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #f8f9fa;
+        }
+
+        #tabela-relatorio {
+            width: 80%;
+            background-color: rgba(52, 58, 64, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #f8f9fa;
+        }
+
+        @media print {
+
+            body * {
+                visibility: hidden;
+            }
+
+            #cupom-pedido,
+            #cupom-pedido * {
+                visibility: visible;
+                color: black !important;
+                /* Força a cor preta */
+            }
+
+            #cupom-pedido {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+        }
+
+        #soma-pedidos-dia {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: rgba(52, 58, 64, 0.9);
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        #soma-pedidos-dia h3 {
+            margin-top: 0;
+            color: #f8f9fa;
+            font-size: 1.2em;
+        }
+
+        #soma-pedidos-dia p {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            animation-name: animatetop;
+            animation-duration: 0.4s;
+            color: black;
+            /* Adiciona a cor preta para o texto */
+        }
+
+        #cupom-pedido-conteudo {
+            color: black;
+            /* Garante que o texto dentro do cupom também seja preto */
+        }
+
+        @keyframes animatetop {
+            from {
+                top: -300px;
+                opacity: 0
+            }
+
+            to {
+                top: 0;
+                opacity: 1
+            }
+        }
+
+        .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #whatsapp-number-modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        #whatsapp-number-modal .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%;
+            /* Ajuste a largura conforme necessário */
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            animation-name: animatetop;
+            animation-duration: 0.4s;
+            color: black;
+        }
+
+        #whatsapp-number-modal .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        #whatsapp-number-modal .close:hover,
+        #whatsapp-number-modal .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Novas classes para alinhar os detalhes mensais */
+        .detalhes-mensais-container {
+            display: flex;
+            justify-content: space-around; /* Distribui os itens igualmente */
+            align-items: flex-start; /* Alinha os itens no topo */
+        }
+
+        .detalhes-mensais-entradas,
+        .detalhes-mensais-saidas {
+            width: 45%; /* Ajuste conforme necessário */
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <h1 style="color:red; margin-left: 10px; font-size: 2em;">🍣 SUSHI</h1>
+
+        <div>
+            <button id="btn-pedidos" data-tela="pedidos"><i class="fas fa-utensils"></i> Pedidos</button>
+            <button id="btn-caixa" data-tela="caixa"><i class="fas fa-cash-register"></i> Caixa</button>
+            <button id="btn-entregas" data-tela="entregas"><i class="fas fa-truck"></i> Entregas</button>
+            <button id="btn-financeiro" data-tela="financeiro"><i class="fas fa-chart-line"></i> Financeiro</button>
+            <button id="btn-despesas" data-tela="despesas"><i class="fas fa-minus-circle"></i> Despesas</button>
+        </div>
+    </nav>
+
+    <main>
+        <section id="tela-pedidos" class="tela" data-tela="pedidos">
+            <h2 class="pedidos-title">Pedidos</h2>
+            <div class="container-pedidos">
+                <div id="cardapio">
+                    <h3>Cardápio</h3>
+                    <div id="lista-produtos">
+                        <!-- Produtos do cardápio aqui -->
+                    </div>
+                    <div id="form-produto">
+                        <h4>Adicionar/Editar Produto</h4>
+                        <label for="nome-produto">Nome:</label>
+                        <input type="text" id="nome-produto">
+                        <label for="preco-produto">Preço:</label>
+                        <input type="number" id="preco-produto" step="0.01">
+                        <input type="hidden" id="id-produto">
+                        <button id="salvar-produto">Salvar</button>
+                        <button id="cancelar-produto">Cancelar</button>
+                        <button id="excluir-produto">Excluir</button>
+                    </div>
+                </div>
+                <div id="pedido">
+                    <h3>Pedido Atual</h3>
+                    <ul id="lista-itens-pedido">
+                        <!-- Itens do pedido aqui -->
+                    </ul>
+                    <p>Total: <span id="total-pedido">R$ 0,00</span></p>
+                    <div id="botoes-edicao-pedido">
+                        <button id="editar-item-pedido">Editar Item</button>
+                        <button id="excluir-item-pedido">Excluir Item</button>
+                    </div>
+                    <button id="finalizar-pedido">Finalizar Pedido</button>
+                    <button id="enviar-whatsapp-pedido">Enviar Pedido por WhatsApp</button>
+                </div>
+            </div>
+            <button id="exportar-pedidos">Exportar para Excel</button>
+        </section>
+
+        <section id="tela-caixa" class="tela" data-tela="caixa">
+            <h2 class="caixa-title">Caixa</h2>
+            <div class="container-caixa">
+
+                <div id="itens-caixa">
+                    <h3>Itens do Pedido</h3>
+                    <ul id="lista-itens-caixa">
+                        <!-- Itens do pedido virão aqui -->
+                    </ul>
+                    <p>Subtotal: <span id="subtotal-caixa">R$ 0,00</span></p>
+                    <label for="desconto">Desconto:</label>
+                    <input type="number" id="desconto" value="0" step="0.01">
+                    <p>Total: <span id="total-caixa">R$ 0,00</span></p>
+                </div>
+
+                <div id="div-pagamento">
+                    <label for="valor-pago">Valor Pago:</label>
+                    <input type="number" id="valor-pago" step="0.01">
+                    <p>Troco: <span id="troco">R$ 0,00</span></p>
+                    <button id="calcular-troco">Calcular Troco</button>
+                </div>
+
+                <div id="opcoes-pagamento">
+                    <button data-pagamento="dinheiro">Dinheiro</button>
+                    <button data-pagamento="credito">Cartão de Crédito</button>
+                    <button data-pagamento="debito">Cartão de Débito</button>
+                    <button data-pagamento="pix">Pix</button>
+                </div>
+
+                <button id="finalizar-venda">Finalizar Venda</button>
+                <!-- Cupom Fiscal -->
+                <div id="cupom-pedido">
+                </div>
+                <button id="abrir-cupom">Imprimir Cupom</button>
+            </div>
+            <button id="exportar-caixa">Exportar para Excel</button>
+        </section>
+
+        <!-- Modal para o Cupom Fiscal -->
+        <div id="impressaoModal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <div id="cupom-pedido-modal">
+                    <!-- Cupom Fiscal -->
+                    <div id="cupom-pedido-conteudo">
+                    </div>
+                    <button id="imprimir-cupom">Imprimir Cupom</button>
+                    <button id="cancelar-impressao">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para o Número do WhatsApp -->
+        <div id="whatsapp-number-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <label for="whatsapp-number-input">Número do WhatsApp:</label>
+                <input type="tel" id="whatsapp-number-input" placeholder="Digite o número com DDD">
+                <label for="whatsapp-nome-cliente">Nome do Cliente (opcional):</label>
+                <input type="text" id="whatsapp-nome-cliente" placeholder="Digite o nome do cliente">
+                <button id="enviar-pedido">Enviar Pedido</button>
+            </div>
+        </div>
+
+        <section id="tela-entregas" class="tela" data-tela="entregas">
+            <h2 class="entregas-title">Entregas e Delivery</h2>
+
+            <div id="soma-pedidos-dia">
+                <h3 style="color: red;">Total de Pedidos do Dia</h3>
+                <p style="color: white;">Valor: R$ <span id="total-pedidos-dia">0.00</span></p>
+                <p style="color: white;">Quantidade: <span id="quantidade-pedidos-dia">0</span></p>
+            </div>
+
+            <div id="form-cliente">
+                <h3>Informações do Cliente</h3>
+                <label for="nome-cliente">Nome:</label>
+                <input type="text" id="nome-cliente">
+                <label for="endereco-cliente">Endereço:</label>
+                <input type="text" id="endereco-cliente">
+                <label for="telefone-cliente">Telefone:</label>
+                <input type="tel" id="telefone-cliente">
+                <input type="hidden" id="cliente-index">
+                <button id="salvar-cliente">Salvar Informações</button>
+                <button id="cancelar-cliente">Cancelar</button>
+                <button id="excluir-cliente">Excluir Cliente</button>
+            </div>
+
+            <div id="lista-entregas">
+
+                <!-- Pedidos do Dia Anterior -->
+                <div class="secao-data" id="pedidos-dia-anterior">
+                    <h3>Pedidos do Dia Anterior</h3>
+                    <!-- Itens de entrega do dia anterior -->
+                    <ul id="lista-entregas-dia-anterior"></ul>
+                </div>
+
+                <!-- Pedidos do Dia Atual -->
+                <div class="secao-data" id="pedidos-dia-atual">
+                    <h3>Pedidos do Dia Atual</h3>
+                    <!-- Itens de entrega do dia atual -->
+                    <ul id="lista-entregas-dia-atual"></ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="tela-financeiro" class="tela" data-tela="financeiro">
+            <h2 class="financeiro-title">Fluxo Financeiro</h2>
+            <div id="relatorios-financeiros">
+                <h3>Resumo Financeiro</h3>
+                <div class="resumo-financeiro">
+                    <p>Saldo Total: R$ <span id="saldo-total">0.00</span></p>
+                    <div class="entradas-saidas">
+                        <p>Entradas: R$ <span id="entradas-total">0.00</span></p>
+                        <p>Saídas: R$ <span id="saidas-total">0.00</span></p>
+                    </div>
+                </div>
+
+                <h3>Detalhes Mensais</h3>
+                <div class="detalhes-mensais">
+                    <div class="detalhes-mensais-container">
+                        <div class="detalhes-mensais-entradas">
+                            <h4>Entradas</h4>
+                            <p>Janeiro: R$ <span id="janeiro-entradas">0.00</span></p>
+                            <p>Fevereiro: R$ <span id="fevereiro-entradas">0.00</span></p>
+                            <p>Março: R$ <span id="marco-entradas">0.00</span></p>
+                            <!-- Adicione os outros meses aqui -->
+                        </div>
+                        <div class="detalhes-mensais-saidas">
+                            <h4>Saídas</h4>
+                            <p>Janeiro: R$ <span id="janeiro-saidas">0.00</span></p>
+                            <p>Fevereiro: R$ <span id="fevereiro-saidas">0.00</span></p>
+                            <p>Março: R$ <span id="marco-saidas">0.00</span></p>
+                            <!-- Adicione os outros meses aqui -->
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Movimentações</h3>
+                <ul id="lista-movimentacoes">
+                </ul>
+                <!-- Botões de Editar e Excluir Movimentação -->
+                <div id="botoes-edicao-financeiro">
+                    <button id="editar-movimentacao">Editar Movimentacao</button>
+                    <button id="excluir-movimentacao">Excluir Movimentacao</button>
+                </div>
+
+                <h3>Gráfico de Receitas e Despesas</h3>
+                <div id="grafico-financeiro">
+                    <!-- Aqui você pode adicionar um gráfico utilizando uma biblioteca como Chart.js -->
+                    <p>Gráfico de exemplo</p>
+                </div>
+            </div>
+            <button id="exportar-financeiro">Exportar para Excel</button>
+        </section>
+
+        <section id="tela-despesas" class="tela" data-tela="despesas">
+            <h2 class="despesas-title">Registro de Despesas</h2>
+            <div id="form-despesa">
+                <h3>Adicionar Despesa</h3>
+                <label for="descricao-despesa">Descrição:</label>
+                <input type="text" id="descricao-despesa">
+                <label for="valor-despesa">Valor:</label>
+                <input type="number" id="valor-despesa" step="0.01">
+                <input type="hidden" id="despesa-index">
+                <button id="salvar-despesa">Salvar Despesa</button>
+                <button id="cancelar-despesa">Cancelar</button>
+                <button id="excluirDespesa">Excluir Despesa</button>
+            </div>
+
+            <div id="lista-despesas">
+                <h3>Lista de Despesas</h3>
+                <ul id="lista-despesas-ul">
+                    <!-- Despesas serão listadas aqui -->
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2025 Sistema de Pedidos e Caixa</p>
+    </footer>
+
+    <script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // * Variáveis Globais *
+            let numeroPedido = 1;
+            let produtos = [
+                { id: 1, nome: 'Sushi Salmão', preco: 25.00 },
+                { id: 2, nome: 'Nigiri Atum', preco: 22.00 },
+                { id: 3, nome: 'Sashimi Misto', preco: 35.00 },
+                { id: 4, nome: 'Temaki Salmão', preco: 18.00 },
+                { id: 5, nome: 'Hot Roll', preco: 28.00 },
+                { id: 6, nome: 'Harumaki de Queijo', preco: 15.00 },
+                { id: 7, nome: 'Yakisoba Frango', preco: 30.00 },
+                { id: 8, nome: 'Gyoza', preco: 20.00 },
+                { id: 9, nome: 'Sunomono', preco: 12.00 }
+            ];
+            let itensPedido = []; // Pedido atual
+            let pedidoParaCaixa = []; // Pedido a ser transferido para a tela de caixa.
+            let totalPedido = 0;
+            let vendasDiarias = []; // Array para armazenar as vendas diárias
+            let despesas = []; // Array para armazenar as despesas
+            let saldoTotal = 0;
+            let movimentacoes = [];
+            let clientes = []; // Array para armazenar informações dos clientes
+            let formaPagamento = '';
+            let itemSelecionadoPedido = null; // Para rastrear o item selecionado no pedido
+            let itemIndexSelecionado = null; // Para rastrear o índice do item selecionado no pedido
+
+            // * Elementos da Tela de Pedidos *
+            const listaProdutos = document.getElementById('lista-produtos');
+            const listaItensPedido = document.getElementById('lista-itens-pedido');
+            const totalPedidoElement = document.getElementById('total-pedido');
+            const finalizarPedidoButton = document.getElementById('finalizar-pedido');
+            const exportarPedidosButton = document.getElementById('exportar-pedidos');
+            const editarItemPedidoButton = document.getElementById('editar-item-pedido');
+            const excluirItemPedidoButton = document.getElementById('excluir-item-pedido');
+            const enviarWhatsappPedidoButton = document.getElementById('enviar-whatsapp-pedido'); // Botão Enviar WhatsApp na tela de pedidos
+
+            // * Elementos do Formulário de Produto (Cardápio) *
+            const nomeProdutoInput = document.getElementById('nome-produto');
+            const precoProdutoInput = document.getElementById('preco-produto');
+            const idProdutoInput = document.getElementById('id-produto');
+            const salvarProdutoButton = document.getElementById('salvar-produto');
+            const cancelarProdutoButton = document.getElementById('cancelar-produto');
+            const excluirProdutoButton = document.getElementById('excluir-produto');
+
+            // * Elementos da Tela de Caixa *
+            const listaItensCaixa = document.getElementById('lista-itens-caixa');
+            const subtotalCaixaElement = document.getElementById('subtotal-caixa');
+            const totalCaixaElement = document.getElementById('total-caixa');
+            const valorPagoInput = document.getElementById('valor-pago');
+            const descontoInput = document.getElementById('desconto');
+            const calcularTrocoButton = document.getElementById('calcular-troco');
+            const trocoElement = document.getElementById('troco');
+            const finalizarVendaButton = document.getElementById('finalizar-venda');
+            const exportarCaixaButton = document.getElementById('exportar-caixa');
+            const abrirCupomButton = document.getElementById('abrir-cupom');
+            const imprimirCupomButton = document.getElementById('imprimir-cupom');
+            const opcoesPagamentoButtons = document.querySelectorAll('#opcoes-pagamento button');
+            const cancelarImpressaoButton = document.getElementById('cancelar-impressao');
+
+
+            // * Elementos do Cupom Fiscal *
+        const cupomPedido = document.getElementById('cupom-pedido');
+        const cupomPedidoConteudo = document.getElementById('cupom-pedido-conteudo');
+
+        // * Elementos da Tela de Entregas *
+        const nomeClienteInput = document.getElementById('nome-cliente');
+        const enderecoClienteInput = document.getElementById('endereco-cliente');
+        const telefoneClienteInput = document.getElementById('telefone-cliente');
+        const clienteIndexInput = document.getElementById('cliente-index');
+        const salvarClienteButton = document.getElementById('salvar-cliente');
+        const cancelarClienteButton = document.getElementById('cancelar-cliente');
+        const excluirClienteButton = document.getElementById('excluir-cliente');
+        const listaEntregasDiaAnterior = document.getElementById('lista-entregas-dia-anterior');
+        const listaEntregasDiaAtual = document.getElementById('lista-entregas-dia-atual'); // Corrigido
+        const exportarEntregasButton = document.getElementById('exportar-entregas');
+        const totalPedidosDiaElement = document.getElementById('total-pedidos-dia');
+        const quantidadePedidosDiaElement = document.getElementById('quantidade-pedidos-dia');
+
+        // * Elementos da Tela Financeira *
+        const saldoTotalElement = document.getElementById('saldo-total');
+        const entradasTotalElement = document.getElementById('entradas-total');
+        const saidasTotalElement = document.getElementById('saidas-total');
+        const janeiroEntradasElement = document.getElementById('janeiro-entradas');
+        const fevereiroEntradasElement = document.getElementById('fevereiro-entradas');
+        const marcoEntradasElement = document.getElementById('marco-entradas');
+        const janeiroSaidasElement = document.getElementById('janeiro-saidas');
+        const fevereiroSaidasElement = document.getElementById('fevereiro-saidas');
+        const marcoSaidasElement = document.getElementById('marco-saidas');
+        const listaMovimentacoes = document.getElementById('lista-movimentacoes');
+        const exportarFinanceiroButton = document.getElementById('exportar-financeiro');
+        const editarMovimentacaoButton = document.getElementById('editar-movimentacao');
+        const excluirMovimentacaoButton = document.getElementById('excluir-movimentacao');
+
+        // * Elementos da Tela de Despesas *
+        const descricaoDespesaInput = document.getElementById('descricao-despesa');
+        const valorDespesaInput = document.getElementById('valor-despesa');
+        const despesaIndexInput = document.getElementById('despesa-index');
+        const salvarDespesaButton = document.getElementById('salvar-despesa');
+        const cancelarDespesaButton = document.getElementById('cancelar-despesa');
+        const excluirDespesaButton = document.getElementById('excluirDespesa');
+        const listaDespesasULElement = document.getElementById('lista-despesas-ul');
+
+        // * Elementos do Modal do WhatsApp *
+        const whatsappNumberModal = document.getElementById('whatsapp-number-modal');
+        const whatsappNumberInput = document.getElementById('whatsapp-number-input');
+        const whatsappNomeClienteInput = document.getElementById('whatsapp-nome-cliente'); // Nova linha
+        const enviarPedidoButton = document.getElementById('enviar-pedido');
+
+        // Get the modal
+        var modal = document.getElementById("impressaoModal");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementsByClassName("close")[0];
+
+        // * Navegação e Telas *
+        const botoesNav = document.querySelectorAll('nav button');
+        const telas = document.querySelectorAll('.tela');
+
+        function mostrarTela(telaId) {
+            telas.forEach(tela => tela.style.display = 'none');
+            const tela = document.getElementById(`tela-${telaId}`);
+            if (tela) {
+                tela.style.display = 'block';
+
+                // Atualiza a tela financeira ao mostrar a tela
+                if (telaId === 'financeiro') {
+                    atualizarTelaFinanceira();
+                }
+
+                // Atualiza a tela de entregas ao mostrar a tela
+                if (telaId === 'entregas') {
+                    exibirEntregas();
+                    atualizarTotalPedidosDia();
+                }
+            }
+        }
+
+        botoesNav.forEach(botao => {
+            botao.addEventListener('click', function () {
+                const telaId = this.dataset.tela;
+                mostrarTela(telaId);
+            });
+        });
+
+        // Mostrar a tela de pedidos por padrão
+        mostrarTela('pedidos');
+
+        // * Gerenciamento do Cardápio (Pedidos) *
+        function exibirProdutos() {
+            listaProdutos.innerHTML = '';
+            produtos.forEach(produto => {
+                const itemProduto = document.createElement('div');
+                itemProduto.innerHTML = `
+                    <p>${produto.nome} - R$ ${produto.preco.toFixed(2)}</p>
+                    <button class="btn-adicionar-produto" data-id="${produto.id}">Adicionar</button>
+                    <button class="btn-editar-produto" data-id="${produto.id}">Editar</button>
+                    <button class="btn-excluir-produto" data-id="${produto.id}">Excluir</button>
+                `;
+                listaProdutos.appendChild(itemProduto);
+            });
+        }
+
+        // Evento de clique na lista de produtos
+        listaProdutos.addEventListener('click', function (event) {
+            const target = event.target;
+            const produtoId = parseInt(target.dataset.id);
+            const produto = produtos.find(p => p.id === produtoId);
+
+            if (target.classList.contains('btn-adicionar-produto')) {
+                if (produto) {
+                    itensPedido.push(produto);
+                    atualizarPedido();
+                }
+            } else if (target.classList.contains('btn-editar-produto')) {
+                if (produto) {
+                    // Preenche o formulário com os dados do produto
+                    nomeProdutoInput.value = produto.nome;
+                    precoProdutoInput.value = produto.preco;
+                    idProdutoInput.value = produto.id;
+                }
+            } else if (target.classList.contains('btn-excluir-produto')) {
+                if (produto) {
+                    excluirProduto(produtoId);
+                }
+            }
+        });
+
+        // Salvar produto (novo ou editado)
+        salvarProdutoButton.addEventListener('click', function () {
+            const nome = nomeProdutoInput.value;
+            const preco = parseFloat(precoProdutoInput.value);
+            const id = idProdutoInput.value;
+
+            if (nome && !isNaN(preco)) {
+                if (id) {
+                    // Editar produto existente
+                    const produtoIndex = produtos.findIndex(p => p.id === parseInt(id));
+                    if (produtoIndex !== -1) {
+                        produtos[produtoIndex].nome = nome;
+                        produtos[produtoIndex].preco = preco;
+                    }
+                } else {
+                    // Adicionar novo produto
+                    const novoId = produtos.length > 0 ? Math.max(...produtos.map(p => p.id)) + 1 : 1;
+                    produtos.push({
+                        id: novoId,
+                        nome: nome,
+                        preco: preco
+                    });
+                }
+                limparFormularioProduto();
+                exibirProdutos();
+            } else {
+                alert("Por favor, preencha todos os campos corretamente.");
+            }
+        });
+
+        // Cancelar edição de produto
+        cancelarProdutoButton.addEventListener('click', function () {
+            limparFormularioProduto();
+        });
+
+        // Excluir produto
+        excluirProdutoButton.addEventListener('click', function () {
+            const id = idProdutoInput.value;
+            if (id) {
+                excluirProduto(parseInt(id));
+            } else {
+                alert("Selecione um produto para excluir.");
+            }
+        });
+
+        // Limpar formulário de produto
+        function limparFormularioProduto() {
+            nomeProdutoInput.value = '';
+            precoProdutoInput.value = '';
+            idProdutoInput.value = '';
+        }
+
+        // Excluir produto da lista
+        function excluirProduto(id) {
+            const produtoIndex = produtos.findIndex(p => p.id === id);
+            if (produtoIndex !== -1) {
+                produtos.splice(produtoIndex, 1);
+
+                limparFormularioProduto();
+                exibirProdutos();
+            }
+        }
+
+        function atualizarPedido() {
+            listaItensPedido.innerHTML = '';
+            totalPedido = 0;
+
+            itensPedido.forEach((item, index) => {
+                const itemPedidoElement = document.createElement('li');
+                itemPedidoElement.textContent = `${item.nome} - R$ ${item.preco.toFixed(2)}`;
+                itemPedidoElement.dataset.index = index;  // Adiciona o índice ao item
+
+                listaItensPedido.appendChild(itemPedidoElement);
+                totalPedido += item.preco;
+            });
+
+            totalPedidoElement.textContent = `R$ ${totalPedido.toFixed(2)}`;
+        }
+
+        // Listen for click events on the order list
+        listaItensPedido.addEventListener('click', function (event) {
+            const target = event.target;
+            const index = target.dataset.index;
+            if (index) {
+                itemIndexSelecionado = parseInt(index);  // Guarda o índice selecionado
+            }
+        });
+
+        // Adicionar funcionalidade aos botões Editar Item e Excluir Item
+        editarItemPedidoButton.addEventListener('click', function () {
+            if (itemIndexSelecionado !== null) {
+                editarItemPedido(itemIndexSelecionado);
+            } else {
+                alert("Selecione um item na lista para editar.");
+            }
+        });
+
+        excluirItemPedidoButton.addEventListener('click', function () {
+            if (itemIndexSelecionado !== null) {
+                excluirItemPedido(itemIndexSelecionado);
+            } else {
+                alert("Selecione um item na lista para excluir.");
+            }
+        });
+
+        function editarItemPedido(index) {
+            // Preenche o formulário com os dados do produto selecionado
+            const item = itensPedido[index];
+            if (item) {
+                nomeProdutoInput.value = item.nome;
+                precoProdutoInput.value = item.preco;
+                idProdutoInput.value = item.id; // Usando o ID original para referência
+                itemSelecionadoPedido = index; // Guarda o índice do item sendo editado
+
+                // Exibe o formulário de produto
+                document.getElementById('form-produto').style.display = 'block';
+            }
+        }
+
+        function excluirItemPedido(index) {
+            // Remove o item do array de itensPedido
+            itensPedido.splice(index, 1);
+            atualizarPedido();
+            itemIndexSelecionado = null; // Reset selected index
+        }
+
+        editarMovimentacaoButton.addEventListener('click', function () {
+            const index = prompt("Digite o número da movimentação que deseja editar:");
+            if (index !== null && index >= 0 && index < movimentacoes.length) {
+                const novaDescricao = prompt("Digite a nova descrição da movimentação:");
+                const novoValor = parseFloat(prompt("Digite o novo valor da movimentação:"));
+
+                if (novaDescricao && !isNaN(novoValor)) {
+                    movimentacoes[index].descricao = novaDescricao;
+                    movimentacoes[index].valor = novoValor;
+                    atualizarTelaFinanceira();
+                    atualizarTotalPedidosDia(); // Atualiza após editar movimentação
+                } else {
+                    alert("Dados inválidos para a movimentação.");
+                }
+            } else {
+                alert("Índice inválido.");
+            }
+        });
+
+        excluirMovimentacaoButton.addEventListener('click', function () {
+            const index = prompt("Digite o número da movimentação que deseja excluir:");
+            if (index !== null && index >= 0 && index < movimentacoes.length) {
+                movimentacoes.splice(index, 1);
+                atualizarTelaFinanceira();
+                atualizarTotalPedidosDia(); // Atualiza após excluir movimentação
+                salvarDados();
+            } else {
+                alert("Índice inválido.");
+            }
+        });
+
+        // * Transferir Pedido para Caixa *
+        finalizarPedidoButton.addEventListener('click', function () {
+            // Copia os itens do pedido atual para o "pedido para caixa".
+            pedidoParaCaixa = [...itensPedido];
+
+            // Limpa o pedido atual.
+            itensPedido = [];
+            atualizarPedido();
+
+            // Atualiza a tela de caixa com os itens do pedido.
+            atualizarCaixa();
+
+            // Mostra a tela de caixa.
+            mostrarTela('caixa');
+        });
+
+        // * Tela de Caixa *
+        function atualizarCaixa() {
+            listaItensCaixa.innerHTML = '';
+            let subtotal = 0;
+
+            pedidoParaCaixa.forEach(item => {
+                const itemCaixaElement = document.createElement('li');
+                itemCaixaElement.textContent = `${item.nome} - R$ ${item.preco.toFixed(2)}`;
+                listaItensCaixa.appendChild(itemCaixaElement);
+                subtotal += item.preco;
+            });
+
+            subtotalCaixaElement.textContent = `R$ ${subtotal.toFixed(2)}`;
+            totalCaixaElement.textContent = `R$ ${subtotal.toFixed(2)}`; // Total inicial é o subtotal.
+        }
+
+        // Calcular Troco
+        calcularTrocoButton.addEventListener('click', function () {
+            const total = parseFloat(totalCaixaElement.textContent.replace('R$ ', ''));
+            const valorPago = parseFloat(valorPagoInput.value);
+
+            if (isNaN(valorPago)) {
+                alert("Por favor, insira um valor pago válido.");
+                return;
+            }
+
+            const troco = valorPago - total;
+            trocoElement.textContent = `R$ ${troco.toFixed(2)}`;
+        });
+
+        // * Funcionalidade para definir a forma de pagamento *
+        opcoesPagamentoButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                formaPagamento = this.dataset.pagamento;
+                // Remover a classe 'selecionado' de todos os botões
+                opcoesPagamentoButtons.forEach(btn => btn.classList.remove('selecionado'));
+                // Adicionar a classe 'selecionado' ao botão clicado
+                this.classList.add('selecionado');
+            });
+        });
+
+        // Finalizar Venda
+        finalizarVendaButton.addEventListener('click', function () {
+            const total = parseFloat(totalCaixaElement.textContent.replace('R$ ', ''));
+            const valorPago = parseFloat(valorPagoInput.value);
+            const desconto = parseFloat(descontoInput.value);
+
+            if (isNaN(valorPago)) {
+                alert("Por favor, insira um valor pago válido.");
+                return;
+            }
+
+            if (valorPago < total) {
+                alert("Valor pago é insuficiente.");
+                return;
+            }
+
+            const troco = valorPago - total;
+
+            // Gerar cupom fiscal
+            gerarCupomFiscal(pedidoParaCaixa, total, formaPagamento, valorPago, desconto, troco);
+            cupomPedido.style.display = 'block'; // Exibe o cupom após a venda
+
+            // Adicionar a venda ao array de vendas diárias
+            vendasDiarias.push({
+                data: new Date(),
+                valor: total,
+                pagamento: formaPagamento // Adiciona a forma de pagamento
+            });
+
+            // Adicionar a movimentação ao array
+            movimentacoes.push({
+                data: new Date(),
+                tipo: 'Entrada',
+                descricao: `Venda - ${formaPagamento}`, // Inclui a forma de pagamento na descrição
+                valor: total
+            });
+
+            // Atualizar a tela financeira
+            atualizarTelaFinanceira();
+            atualizarTotalPedidosDia(); // Atualiza após nova venda
+            salvarDados();
+        });
+
+        // When the user clicks on the button, open the modal
+        abrirCupomButton.onclick = function () {
+            // Move the content to the modal
+            cupomPedidoConteudo.innerHTML = cupomPedido.innerHTML;
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Function to print the coupon and close the modal
+        imprimirCupomButton.onclick = function () {
+            window.print(); // Call print function
+            limparCaixa();
+            modal.style.display = "none";
+        }
+
+        // Function to close the modal without printing
+        cancelarImpressaoButton.onclick = function () {
+            modal.style.display = "none";
+        }
+
+        // Gerar Cupom Fiscal
+        function gerarCupomFiscal(itens, total, formaPagamento, valorPago, desconto, troco) {
+            const data = new Date();
+            const dataFormatada = data.toLocaleDateString();
+            const horaFormatada = data.toLocaleTimeString();
+            const subtotal = total + parseFloat(desconto);
+
+            let cupomText = `
+======== SUSHIZERO ========
+CNPJ: 12.345.678/0001-90
+Endereço: Rua Exemplo, 123 - Centro
+Telefone: (11) 99999-8888
+Data: ${dataFormatada}, ${horaFormatada}
+----------------------------------------
+`;
+
+                itens.forEach(item => {
+                    cupomText += `${item.nome} - R$ ${item.preco.toFixed(2)}\n`;
+                });
+
+                cupomText += `
+----------------------------------------
+Subtotal: R$ ${subtotal.toFixed(2)}
+Desconto: R$ ${desconto.toFixed(2)}
+Total: R$ ${total.toFixed(2)}
+Valor Pago: R$ ${valorPago.toFixed(2)}
+Troco: R$ ${troco.toFixed(2)}
+======== Obrigado! ========
+`;
+                cupomPedido.innerHTML = cupomText;
+            }
+
+            // Limpar Caixa
+        function limparCaixa() {
+            pedidoParaCaixa = [];
+            atualizarCaixa();
+            valorPagoInput.value = '';
+            descontoInput.value = '0';
+            trocoElement.textContent = 'R$ 0.00';
+            cupomPedido.style.display = 'none'; // Oculta o cupom
+
+            // Desseleciona todos os botões de pagamento
+            opcoesPagamentoButtons.forEach(btn => btn.classList.remove('selecionado'));
+            formaPagamento = '';
+        }
+
+        // * Tela Financeira *
+        function atualizarTelaFinanceira() {
+            let entradas = 0;
+            let saidas = 0;
+
+            // Reset monthly totals
+            let janeiroEntradas = 0;
+            let fevereiroEntradas = 0;
+            let marcoEntradas = 0;
+            let janeiroSaidas = 0;
+            let fevereiroSaidas = 0;
+            let marcoSaidas = 0;
+
+            movimentacoes.forEach(movimentacao => {
+                const mes = movimentacao.data.getMonth(); // 0 = Janeiro, 1 = Fevereiro, 2 = Março
+                const valor = movimentacao.valor;
+
+                if (movimentacao.tipo === 'Entrada') {
+                    entradas += valor;
+                    if (mes === 0) janeiroEntradas += valor;
+                    else if (mes === 1) fevereiroEntradas += valor;
+                    else if (mes === 2) marcoEntradas += valor;
+                } else if (movimentacao.tipo === 'Saída') {
+                    saidas += valor;
+                    if (mes === 0) janeiroSaidas += valor;
+                    else if (mes === 1) fevereiroSaidas += valor;
+                    else if (mes === 2) marcoSaidas += valor;
+                }
+            });
+
+            saldoTotal = entradas - saidas;
+
+            saldoTotalElement.textContent = saldoTotal.toFixed(2);
+            entradasTotalElement.textContent = entradas.toFixed(2);
+            saidasTotalElement.textContent = saidas.toFixed(2);
+
+            // Display monthly totals
+            janeiroEntradasElement.textContent = janeiroEntradas.toFixed(2);
+            fevereiroEntradasElement.textContent = fevereiroEntradas.toFixed(2);
+            marcoEntradasElement.textContent = marcoEntradas.toFixed(2);
+            janeiroSaidasElement.textContent = janeiroSaidas.toFixed(2);
+            fevereiroSaidasElement.textContent = fevereiroSaidas.toFixed(2);
+            marcoSaidasElement.textContent = marcoSaidas.toFixed(2);
+
+            // Limpa a lista antes de adicionar os novos itens
+            listaMovimentacoes.innerHTML = '';
+
+            movimentacoes.forEach((movimentacao, index) => {
+                const itemMovimentacao = document.createElement('li');
+                itemMovimentacao.innerHTML = `${index + 1}. ${movimentacao.data.toLocaleDateString()} - ${movimentacao.tipo} - ${movimentacao.descricao} - R$ ${movimentacao.valor.toFixed(2)}
+                     <button class="btn-excluir-movimentacao" data-index="${index}">Excluir</button>`;
+
+                listaMovimentacoes.appendChild(itemMovimentacao);
+            });
+
+            atualizarTotalPedidosDia(); //Atualizar o total de pedidos depois de atualizar finanças
+
+            localStorage.setItem('saldoTotal', saldoTotal.toString());
+        }
+
+        // * Tela de Despesas *
+        salvarDespesaButton.addEventListener('click', function () {
+            const descricao = descricaoDespesaInput.value;
+            const valor = parseFloat(valorDespesaInput.value);
+            const index = despesaIndexInput.value;
+
+            if (descricao && !isNaN(valor)) {
+                if (index) {
+                    // Editar despesa existente
+                    despesas[index].descricao = descricao;
+                    despesas[index].valor = valor;
+                } else {
+                    // Adicionar nova despesa
+                    const despesa = {
+                        data: new Date(),
+                        descricao: descricao,
+                        valor: valor
+                    };
+                    despesas.push(despesa);
+                    // Adiciona a movimentação ao array
+                    movimentacoes.push({
+                        data: new Date(),
+                        tipo: 'Saída',
+                        descricao: descricao,
+                        valor: valor
+                    });
+                }
+                saldoTotal -= valor; // Subtrair despesa do saldo total
+                atualizarTelaFinanceira();
+                atualizarListaDespesas();
+                atualizarTotalPedidosDia();
+                limparFormularioDespesa();
+
+                // Salvar despesas e movimentacoes no localStorage
+                salvarDados();
+            } else {
+                alert("Por favor, preencha a descrição e o valor da despesa.");
+            }
+        });
+
+        cancelarDespesaButton.addEventListener('click', function () {
+            limparFormularioDespesa();
+        });
+
+        excluirDespesaButton.addEventListener('click', function () {
+            const index = despesaIndexInput.value;
+            if (index) {
+                excluirDespesa(index);
+            } else {
+                alert("Selecione uma despesa para excluir.");
+            }
+        });
+
+        function limparFormularioDespesa() {
+            descricaoDespesaInput.value = '';
+            valorDespesaInput.value = '';
+            despesaIndexInput.value = '';
+        }
+
+        function atualizarListaDespesas() {
+            listaDespesasULElement.innerHTML = '';
+            despesas.forEach((despesa, index) => {
+                const itemDespesa = document.createElement('li');
+                itemDespesa.innerHTML = `${despesa.descricao} - R$ ${despesa.valor.toFixed(2)}
+                 <button class="btn-editar-despesa" data-index="${index}">Editar</button>
+                 <button class="btn-excluir-despesa" data-index="${index}">Excluir</button>`;
+                listaDespesasULElement.appendChild(itemDespesa);
+            });
+        }
+
+        // * Manipulação dos botões de editar e excluir despesa *
+        listaDespesasULElement.addEventListener('click', function (event) {
+            const target = event.target;
+            if (target.classList.contains('btn-editar-despesa')) {
+                const index = target.dataset.index;
+                editarDespesa(index);
+            } else if (target.classList.contains('btn-excluir-despesa')) {
+                const index = target.dataset.index;
+                excluirDespesa(index);
+            }
+        });
+
+        function editarDespesa(index) {
+            // Preenche o formulário com os dados da despesa selecionada
+            const despesa = despesas[index];
+            descricaoDespesaInput.value = despesa.descricao;
+            valorDespesaInput.value = despesa.valor;
+            despesaIndexInput.value = index; // Guarda o índice da despesa sendo editada
+        }
+
+        function excluirDespesa(index) {
+            // Remove a despesa do array de despesas
+            despesas.splice(index, 1);
+            atualizarListaDespesas();
+            atualizarTelaFinanceira();
+            atualizarTotalPedidosDia();
+            salvarDados(); // Salvar despesas atualizadas
+        }
+
+        // * Tela de Entregas *
+        salvarClienteButton.addEventListener('click', function () {
+            const nome = nomeClienteInput.value;
+            const endereco = enderecoClienteInput.value;
+            const telefone = telefoneClienteInput.value;
+            const index = clienteIndexInput.value;
+
+            if (nome && endereco && telefone) {
+                let cliente = {}; // Declare cliente here
+                if (index) {
+                    // Editar cliente existente
+                    clientes[index].nome = nome;
+                    clientes[index].endereco = endereco;
+                    clientes[index].telefone = telefone;
+                } else {
+                    // Adicionar novo cliente
+                     cliente = {
+                        nome: nome,
+                        endereco: endereco,
+                        telefone: telefone,
+                        data: new Date()
+                    };
+                    clientes.push(cliente);
+                }
+
+                // Salvar clientes no localStorage
+                localStorage.setItem('clientes', JSON.stringify(clientes));
+
+                atualizarListaEntregas(); // Não precisa passar clientes como argumento
+                limparFormularioCliente();
+
+            } else {
+                alert("Por favor, preencha todos os campos do cliente.");
+            }
+        });
+
+        cancelarClienteButton.addEventListener('click', function () {
+            limparFormularioCliente();
+        });
+
+        excluirClienteButton.addEventListener('click', function () {
+            const index = clienteIndexInput.value;
+            if (index) {
+                excluirCliente(index);
+            } else {
+                alert("Selecione um cliente para excluir.");
+            }
+        });
+
+        function limparFormularioCliente() {
+            nomeClienteInput.value = '';
+            enderecoClienteInput.value = '';
+            telefoneClienteInput.value = '';
+            clienteIndexInput.value = '';
+        }
+
+        function atualizarListaEntregas() {
+            // Limpa as listas antes de adicionar os novos itens
+            listaEntregasDiaAnterior.innerHTML = '';
+            listaEntregasDiaAtual.innerHTML = '';
+
+            const hoje = new Date();
+            const ontem = new Date(hoje);
+            ontem.setDate(hoje.getDate() - 1);
+
+            // Garante que 'clientes' está definido e é um array antes de iterar
+            if (clientes && Array.isArray(clientes)) {
+                clientes.forEach((cliente, index) => {
+                    const dataCliente = new Date(cliente.data); // Converte a data para um objeto Date
+
+                    const itemEntrega = document.createElement('li');
+                    itemEntrega.className = 'item-entrega'; // Adiciona a classe
+
+                    itemEntrega.innerHTML = `
+                        <div class="info-cliente">
+                            <p>Nome: ${cliente.nome}</p>
+                            <p>Endereço: ${cliente.endereco}</p>
+                            <p>Telefone: ${cliente.telefone}</p>
+                        </div>
+                        <div class="botoes-entrega">
+                            <button class="btn-editar-entrega" data-index="${index}">Editar</button>
+                            <button class="btn-excluir-entrega" data-index="${index}">Excluir</button>
+                        </div>
+                    `;
+
+                    if (dataCliente.toDateString() === hoje.toDateString()) {
+                        listaEntregasDiaAtual.appendChild(itemEntrega);
+                    } else if (dataCliente.toDateString() === ontem.toDateString()) {
+                        listaEntregasDiaAnterior.appendChild(itemEntrega);
+                    }
+                });
+            } else {
+                console.warn("clientes não está definido ou não é um array:", clientes);
+            }
+        }
+
+        // Adiciona event listeners para os botões de Editar e Excluir na lista de entregas
+        document.getElementById('lista-entregas-dia-atual').addEventListener('click', function (event) {
+            handleEntregaButtons(event);
+        });
+
+        document.getElementById('lista-entregas-dia-anterior').addEventListener('click', function (event) {
+            handleEntregaButtons(event);
+        });
+
+        function handleEntregaButtons(event) {
+            const target = event.target;
+            if (target.classList.contains('btn-editar-entrega')) {
+                const index = target.dataset.index;
+                editarEntrega(index);
+            } else if (target.classList.contains('btn-excluir-entrega')) {
+                const index = target.dataset.index;
+                excluirEntrega(index);
+            }
+        }
+
+        function editarEntrega(index) {
+            const cliente = clientes[index];
+            if (cliente) {
+                nomeClienteInput.value = cliente.nome;
+                enderecoClienteInput.value = cliente.endereco;
+                telefoneClienteInput.value = cliente.telefone;
+                clienteIndexInput.value = index;
+            }
+        }
+
+         function excluirEntrega(index) {
+            if (index !== null && index >= 0 && index < clientes.length) {
+                clientes.splice(index, 1);
+                limparFormularioCliente();
+                atualizarListaEntregas();
+               localStorage.setItem('clientes', JSON.stringify(clientes)); //Salva localstorage após exclsão
+            }
+        }
+
+        function atualizarTotalPedidosDia() {
+            // Filtra as movimentações para obter apenas as entradas (vendas) do dia atual
+            const vendasDia = movimentacoes.filter(movimentacao => {
+                const dataMovimentacao = new Date(movimentacao.data);
+                const hoje = new Date();
+                return dataMovimentacao.toDateString() === hoje.toDateString() && movimentacao.tipo === 'Entrada';
+            });
+
+            // Calcula o total das vendas do dia
+            const total = vendasDia.reduce((soma, movimentacao) => soma + movimentacao.valor, 0);
+
+            // Atualiza a quantidade de pedidos
+            const quantidade = vendasDia.length;
+
+            // Atualiza os elementos HTML
+            totalPedidosDiaElement.textContent = total.toFixed(2);
+            quantidadePedidosDiaElement.textContent = quantidade;
+        }
+
+         // * Atualiza a tela de entregas com base nas movimentações *
+      
+
+         // Adiciona um event listener para a lista de movimentações para detectar exclusões
+        listaMovimentacoes.addEventListener('click', function (event) {
+            const target = event.target;
+            if (target.classList.contains('btn-excluir-movimentacao')) {
+                const index = target.dataset.index;
+                excluirMovimentacao(index); // Assumindo que você já tem essa função
+                atualizarTotalPedidosDia(); // Atualiza após excluir movimentação
+            }
+        });
+
+          // Modifique a função excluirMovimentacao para atualizar a tela de entregas
+        function excluirMovimentacao(index) {
+            if (index !== null && index >= 0 && index < movimentacoes.length) {
+                movimentacoes.splice(index, 1);
+                atualizarTelaFinanceira();
+                atualizarTotalPedidosDia();  // Atualiza a contagem de pedidos
+                salvarDados();
+            } else {
+                alert("Índice inválido.");
+            }
+        }
+
+           // Modifica a função salvarDespesaButton para atualizar a tela de entregas
+        salvarDespesaButton.addEventListener('click', function () {
+            const descricao = descricaoDespesaInput.value;
+            const valor = parseFloat(valorDespesaInput.value);
+            const index = despesaIndexInput.value;
+
+            if (descricao && !isNaN(valor)) {
+                if (index) {
+                  
+                    despesas[index].descricao = descricao;
+                    despesas[index].valor = valor;
+                } else {
+                    
+                    const despesa = {
+                        data: new Date(),
+                        descricao: descricao,
+                        valor: valor
+                    };
+                    despesas.push(despesa);
+                   
+                    movimentacoes.push({
+                        data: new Date(),
+                    tipo: 'Saída',
+                    descricao: descricao,
+                    valor: valor
+                });
+            }
+            atualizarTelaFinanceira();
+            atualizarListaDespesas();
+            atualizarTotalPedidosDia();  // Atualiza a contagem de pedidos
+            limparFormularioDespesa();
+            salvarDados();
+        } else {
+            alert("Por favor, preencha a descrição e o valor da despesa.");
+        }
+    });
+
+    // * Export to Excel functions *
+    function exportToExcel(data, filename) {
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.json_to_sheet(data);
+        XLSX.utils.book_append_sheet(wb, ws, "Data");
+        XLSX.writeFile(wb, filename + ".xlsx");
+    }
+
+        // * Event listeners for Export to Excel *
+        exportarPedidosButton.addEventListener('click', function () {
+        exportToExcel(itensPedido, "pedidos");
+    });
+
+    exportarCaixaButton.addEventListener('click', function () {
+        exportToExcel(pedidoParaCaixa, "caixa");
+    });
+
+    exportarFinanceiroButton.addEventListener('click', function () {
+        exportToExcel(movimentacoes, "financeiro");
+    });
+
+    // * Local Storage Functions *
+    function salvarDados() {
+        localStorage.setItem('vendasDiarias', JSON.stringify(vendasDiarias));
+        localStorage.setItem('despesas', JSON.stringify(despesas));
+        localStorage.setItem('movimentacoes', JSON.stringify(movimentacoes));
+         localStorage.setItem('clientes', JSON.stringify(clientes)); // Add this line
+    }
+
+    function carregarDados() {
+        const vendasDiariasSalvas = localStorage.getItem('vendasDiarias');
+        if (vendasDiariasSalvas) {
+            vendasDiarias = JSON.parse(vendasDiariasSalvas);
+            // Converter as datas de volta para objetos Date
+            vendasDiarias.forEach(venda => {
+                venda.data = new Date(venda.data);
+            });
+        }
+
+        const despesasSalvas = localStorage.getItem('despesas');
+        if (despesasSalvas) {
+            despesas = JSON.parse(despesasSalvas);
+        }
+
+        const movimentacoesSalvas = localStorage.getItem('movimentacoes');
+        if (movimentacoesSalvas) {
+            movimentacoes = JSON.parse(movimentacoesSalvas);
+            // Converter as datas de volta para objetos Date
+            movimentacoes.forEach(movimentacao => {
+                movimentacao.data = new Date(movimentacao.data);
+            });
+        }
+
+        const saldoTotalSalvo = localStorage.getItem('saldoTotal');
+        if (saldoTotalSalvo) {
+            saldoTotal = parseFloat(saldoTotalSalvo);
+        }
+
+        const clientesSalvos = localStorage.getItem('clientes');
+         if (clientesSalvos) {
+            clientes = JSON.parse(clientesSalvos);
+        } else {
+            clientes = [];
+        }
+    }
+
+    function exibirEntregas() {
+        atualizarListaEntregas();
+    }
+
+    // * Funções e Eventos do WhatsApp *
+    enviarWhatsappPedidoButton.addEventListener('click', function () {
+        // Abre o modal para inserir o número do WhatsApp
+        whatsappNumberModal.style.display = 'block';
+    });
+
+    // Lógica para fechar o modal do WhatsApp
+    document.querySelector('#whatsapp-number-modal .close').addEventListener('click', function () {
+        whatsappNumberModal.style.display = 'none';
+    });
+
+    // Lógica para enviar o pedido pelo WhatsApp
+    enviarPedidoButton.addEventListener('click', function () {
+        const phoneNumber = whatsappNumberInput.value.replace(/\D/g, ''); // Remove caracteres não numéricos
+        if (phoneNumber.length < 10) {
+           alert("Por favor, insira um número de WhatsApp válido com DDD.");
+            return;
+        }
+
+        const nomeCliente = whatsappNomeClienteInput.value; // Pega o nome do cliente
+
+        const message = montarMensagemWhatsApp(itensPedido, totalPedidoElement.textContent, nomeCliente);
+        enviarMensagemWhatsApp(phoneNumber, message);
+        whatsappNumberModal.style.display = 'none';
+    });
+
+    function montarMensagemWhatsApp(pedido, total, nomeCliente = "") {
+        let mensagem = "🍣 *Novo Pedido - SUSHIZERO* 🍣\n\n";
+
+        // Adiciona o nome do cliente se fornecido
+        if (nomeCliente) {
+            mensagem += `*Cliente:* ${nomeCliente}\n\n`;
+        }
+
+        pedido.forEach(item => {
+            mensagem += `• ${item.nome} - R$ ${item.preco.toFixed(2)}\n`;
+        });
+        mensagem += `\n*Total:* ${total}\n\n`;
+        mensagem += "Agradecemos a preferência! 🥰";
+        return mensagem;
+    }
+
+    function enviarMensagemWhatsApp(phoneNumber, message) {
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        window.open(whatsappURL, '_blank');
+    }
+
+    // Inicialização
+    carregarDados(); // Carrega os dados do localStorage ao iniciar
+    exibirProdutos();
+    atualizarPedido(); // Atualiza a tela de pedidos para exibir os botões
+    atualizarTelaFinanceira();
+    atualizarListaDespesas();
+    exibirEntregas(); // Exibe as entregas na tela de entregas
+    atualizarTotalPedidosDia(); // Inicializa o total de pedidos do dia
+});
+
+  // Remove a seção de comparativo mensal da tela financeira.
+    document.querySelector('.comparativo-mensal').remove();
+</script>
+<button id="exportar-entregas">Exportar para Excel</button>
+</body>
+
+</html>
+      
