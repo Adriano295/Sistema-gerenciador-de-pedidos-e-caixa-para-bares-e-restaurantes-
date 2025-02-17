@@ -1,1 +1,0 @@
-# Sistema-gerenciador-de-pedidos-e-caixa-para-bares-e-restaurantes-
